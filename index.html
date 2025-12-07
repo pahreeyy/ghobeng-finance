@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gho Auto Repair - #INDOPRIDE ROLEPLAY</title>
+  <link rel="icon" type="image/png" href="image/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --bg-softer: #020617;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.1);
+      --accent-strong: #16a34a;
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.1);
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border: #1f2937;
+      --border-soft: #111827;
+      --shadow-soft: 0 20px 40px rgba(15, 23, 42, 0.7);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 50%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== LOGIN SCREEN ===== */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.18), #020617 60%);
+      border-radius: 22px;
+      padding: 22px 22px 18px;
+      border: 1px solid #1f2937;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .login-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #22c55e, #16a34a, #166534);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #ecfdf5;
+      box-shadow: 0 0 26px rgba(34,197,94,0.8);
+    }
+
+    .login-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .login-subtitle {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .login-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .login-form-group label {
+      color: var(--text-soft);
+    }
+
+    .login-form-group input {
+      background: #020617;
+      border-radius: var(--radius-md);
+      border: 1px solid #1f2937;
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .login-form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.35);
+    }
+
+    .login-btn {
+      margin-top: 4px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(to right, var(--accent), var(--accent-strong));
+      color: #022c22;
+      box-shadow: 0 12px 30px rgba(34,197,94,0.35);
+      transition: all 0.15s ease;
+    }
+
+    .login-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .login-hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+      border-radius: var(--radius-md);
+      border: 1px dashed #1f2937;
+      padding: 8px 8px 6px;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .login-hint code {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      background: #020617;
+      padding: 2px 5px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+    }
+
+    .login-error {
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #fecaca;
+      background: rgba(239,68,68,0.18);
+      border-radius: 999px;
+      padding: 5px 10px;
+      border: 1px solid rgba(239,68,68,0.5);
+      display: none;
+    }
+
+    /* ===== APP LAYOUT ===== */
+    #app-container {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+    }
+
+    .sidebar {
+      background: linear-gradient(to bottom, #020617, #020617, #000);
+      border-right: 1px solid #111827;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      object-fit: cover;
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.7);
+    }
+
+    .brand-text-title {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: 15px;
+    }
+
+    .brand-text-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--text-soft);
+      padding: 9px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .nav button span.label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav button span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #1f2937;
+    }
+
+    .nav button.active span.dot {
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34,197,94,0.7);
+    }
+
+    .nav button.active {
+      background: linear-gradient(to right, rgba(34,197,94,0.15), transparent);
+      color: var(--text);
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+
+    .nav button:hover:not(.active) {
+      background: rgba(15,23,42,0.9);
+      color: var(--text);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      color: var(--text-soft);
+      border-top: 1px dashed #111827;
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-footer span {
+      font-weight: 500;
+      color: #a7f3d0;
+    }
+
+    .logout-btn {
+      align-self: flex-start;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15,23,42,0.9);
+      color: var(--text-soft);
+      font-size: 11px;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logout-btn:hover {
+      border-color: #ef4444;
+      color: #fecaca;
+      background: rgba(127,29,29,0.25);
+    }
+
+    .logout-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #ef4444;
+    }
+
+    .user-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .user-label-role {
+      color: #a7f3d0;
+      font-weight: 500;
+    }
+
+    .main {
+      padding: 22px 26px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    @media (max-width: 600px) {
+      .main { padding: 14px; }
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .badge-soft {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34,197,94,0.8);
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      .cards-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .cards-row { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,1));
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 13px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.09), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-soft);
+    }
+
+    .card-value {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+      position: relative;
+      z-index: 1;
+    }
+
+    .pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: var(--text-soft);
+    }
+
+    .pill-good {
+      border-color: rgba(34,197,94,0.5);
+      background: var(--accent-soft);
+      color: #bbf7d0;
+    }
+
+    .pill-bad {
+      border-color: rgba(239,68,68,0.5);
+      background: var(--danger-soft);
+      color: #fecaca;
+    }
+
+    .layout-two {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 1000px) {
+      .layout-two { grid-template-columns: 1fr; }
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .section-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 12px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .form-group label {
+      color: var(--text-soft);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: #020617;
+      border-radius: var(--radius-md);
+      border: 1px solid #1f2937;
+      padding: 7px 9px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.35);
+    }
+
+    .form-group textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 7px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #020617;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, var(--accent), var(--accent-strong));
+      color: #022c22;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(34,197,94,0.35);
+    }
+
+    .btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+    .btn-ghost {
+      border-color: #1f2937;
+    }
+
+    .btn-ghost:hover {
+      background: #020617;
+      border-color: #334155;
+    }
+
+    .btn-danger {
+      border-color: rgba(239,68,68,0.6);
+      color: #fecaca;
+      background: var(--danger-soft);
+    }
+
+    .btn-danger:hover {
+      border-color: rgba(239,68,68,0.9);
+      background: rgba(239,68,68,0.15);
+    }
+
+    .table-wrapper {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: radial-gradient(circle at top, rgba(15,23,42,1), #020617 60%);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead {
+      background: radial-gradient(circle at top left, rgba(15,23,42,1), #020617);
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #020617;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 500;
+      color: #9ca3af;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #020617;
+      border-bottom-color: #111827;
+    }
+
+    tr:nth-child(even) td { background: rgba(15,23,42,0.75); }
+    tr:nth-child(odd) td { background: rgba(15,23,42,0.95); }
+
+    tr:hover td { background: rgba(30,64,175,0.25); }
+
+    td.actions { text-align: right; }
+    .text-right { text-align: right; }
+    .text-muted { color: var(--text-soft); }
+
+    .chip-type {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+
+    .chip-income {
+      background: var(--accent-soft);
+      color: #bbf7d0;
+      border-color: rgba(34,197,94,0.7);
+    }
+
+    .chip-expense {
+      background: var(--danger-soft);
+      color: #fecaca;
+      border-color: rgba(239,68,68,0.7);
+    }
+
+    .chip-mechanic {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-soft);
+    }
+
+    .status-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+    .status-lunas {
+      background: rgba(22,163,74,0.15);
+      border-color: rgba(34,197,94,0.7);
+      color: #bbf7d0;
+    }
+    .status-belom {
+      background: rgba(234,179,8,0.12);
+      border-color: rgba(234,179,8,0.8);
+      color: #fef3c7;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+        /* Biar filter Kategori & Jenis sejajar di desktop */
+    .filters-row.nowrap { flex-wrap: nowrap; }
+    @media (max-width: 640px) {
+      .filters-row.nowrap { flex-wrap: wrap; } /* mobile boleh turun ke bawah */
+    }
+
+    .filter-input {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-input input,
+    .filter-input select {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 11px;
+      min-width: 0;
+    }
+
+    .filter-input input::placeholder {
+      color: #6b7280;
+    }
+
+    .empty-state {
+      padding: 12px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .tag-soft {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px dashed #1f2937;
+      color: var(--text-soft);
+    }
+
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+
+    .kpi-highlight {
+      font-size: 13px;
+      margin-top: 6px;
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="image/favicon.png" class="brand-logo" alt="Logo" />
+        <div>
+          <div class="login-title">Gho Auto Repair Login</div>
+          <div class="login-subtitle">Masuk sebagai Manager atau Mekanik Ghot Auto Repair.</div>
+        </div>
+      </div>
+      <div id="login-error" class="login-error">Username atau password salah.</div>
+      <form id="login-form">
+        <div class="login-form-group">
+          <label for="login-username">Username</label>
+          <input id="login-username" type="text" autocomplete="username" required placeholder="Contoh: pahreey" />
+        </div>
+        <div class="login-form-group">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+        </div>
+        <button class="login-btn" type="submit">Masuk</button>
+      </form>
+      <div class="login-hint">
+        <div>Information:</div>
+        <div>Jika ada kendala silahkan hubungi<code>pahreeyy#2747</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app-container">
+    <div class="app-shell">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="image/favicon.png" class="brand-logo" alt="Logo" />
+          <div>
+            <div class="brand-text-title">Gho Auto Repair</div>
+            <div class="brand-text-sub">Keuangan Gho Auto Repair</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="nav-section-title">Menu</div>
+          <div class="nav">
+            <button class="nav-btn active" data-page="dashboard" data-role="manager-only">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Dashboard</span>
+              </span>
+              <span>⌂</span>
+            </button>
+            <button class="nav-btn" data-page="transactions" data-role="all">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Transaksi</span>
+              </span>
+              <span>⟳</span>
+            </button>
+            <!-- STOCK menu (manager only) -->
+            <button class="nav-btn" data-page="stock" data-role="manager-only">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Stock</span>
+              </span>
+              <span>📦</span>
+            </button>
+            <button class="nav-btn" data-page="reports" data-role="manager-only">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Laporan</span>
+              </span>
+              <span>▤</span>
+            </button>
+            <button class="nav-btn" data-page="mechanics" data-role="manager-only">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Mekanik</span>
+              </span>
+              <span>👨‍🔧</span>
+            </button>
+            <button class="nav-btn" data-page="users" data-role="manager-only">
+              <span class="label">
+                <span class="dot"></span>
+                <span>Manajemen User</span>
+              </span>
+              <span>👥</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-label">
+            Login sebagai <span id="current-username">-</span> ·
+            <span class="user-label-role" id="current-role-label">-</span>
+          </div>
+          <button id="logout-btn" class="logout-btn" type="button">
+            <span class="logout-dot"></span>
+            <span>Keluar</span>
+          </button>
+          <div>
+            Hak akses:
+            <br/><span>Manager</span> → semua menu
+            <br/><span>Mekanik</span> → hanya Transaksi
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <!-- DASHBOARD -->
+        <section id="page-dashboard" class="page">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Dashboard Keuangan</div>
+              <div class="page-subtitle">Ringkasan kas bengkel & transaksi terbaru.</div>
+            </div>
+            <div class="badge-soft">
+              <span class="badge-dot"></span>
+              Mode Manager · bisa lihat semua data
+            </div>
+          </div>
+
+          <div class="cards-row mt-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Saldo Kas</div>
+                <div class="pill pill-good">Net</div>
+              </div>
+              <div id="card-saldo" class="card-value">IDP$ 0</div>
+              <div class="card-sub">Total pemasukan - pengeluaran.</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Pemasukan Hari Ini</div>
+              </div>
+              <div id="card-income-today" class="card-value">IDP$ 0</div>
+              <div class="card-sub">Total semua pemasukan tanggal hari ini.</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Pengeluaran Hari Ini</div>
+              </div>
+              <div id="card-expense-today" class="card-value">IDP$ 0</div>
+              <div class="card-sub">Belanja sparepart, gaji, dan lain-lain.</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Profit Hari Ini</div>
+              </div>
+              <div id="card-profit-today" class="card-value">IDP$ 0</div>
+              <div class="card-sub">Pemasukan - pengeluaran untuk hari ini.</div>
+            </div>
+            <!-- Total stock card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Total Stok Barang</div>
+              </div>
+              <div id="card-stock-total" class="card-value">0 item</div>
+              <div class="card-sub">Total stok aktif dari semua kategori.</div>
+            </div>
+          </div>
+
+          <div class="layout-two mt-3">
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Transaksi Terbaru</div>
+                  <div class="section-sub">Cek arus kas terakhir yang masuk / keluar.</div>
+                </div>
+              </div>
+              <div class="table-wrapper" id="latest-transactions-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Jenis</th>
+                      <th>Kategori</th>
+                      <th>Mekanik</th>
+                      <th class="text-right">Nominal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="latest-transactions-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Highlight Bulan Ini</div>
+                  <div class="section-sub">Performa bengkel untuk bulan berjalan.</div>
+                </div>
+              </div>
+              <div id="monthly-highlight" class="mt-2 kpi-highlight">
+                Belum ada transaksi di bulan ini.
+              </div>
+              <div class="mt-2">
+                <div class="tag-soft">Tips: pakai halaman Transaksi untuk catat setiap pergerakan bengkel.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRANSACTIONS -->
+        <section id="page-transactions" class="page" style="display:none;">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Transaksi Bengkel</div>
+              <div class="page-subtitle">Catat semua pemasukan sesuai harga list bengkel.</div>
+            </div>
+          </div>
+
+          <div class="layout-two mt-2">
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Tambah Transaksi</div>
+                  <div class="section-sub">Nominal otomatis berdasarkan kategori.</div>
+                </div>
+              </div>
+              <form id="transaction-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="trx-date">Tanggal</label>
+                    <input type="date" id="trx-date" required />
+                  </div>
+              
+                  <!-- JENIS: manager bisa Income/Pengeluaran, mekanik dikunci via JS -->
+                  <div class="form-group">
+                    <label for="trx-type">Jenis</label>
+                    <select id="trx-type">
+                      <option value="income">Pemasukan</option>
+                      <option value="expense">Pengeluaran</option>
+                    </select>
+                  </div>
+              
+                  <div class="form-group">
+                    <label for="trx-category">Kategori</label>
+                    <select id="trx-category" required>
+                      <option value="">Pilih kategori</option>
+                      <option value="Rep S">Rep S</option>
+                      <option value="Rep X">Rep X</option>
+                      <option value="Rep M">Rep M</option>
+                      <option value="Rep A">Rep A</option>
+                      <option value="Rep B">Rep B</option>
+                      <option value="Rep C">Rep C</option>
+                      <option value="Rep D">Rep D</option>
+                      <option value="Rep F">Rep F</option>
+                      <option value="Nitro">Nitro</option>
+                      <option value="Kanebo">Kanebo</option>
+                      <option value="Tool S">Tool S</option>
+                      <option value="Tool X">Tool X</option>
+                      <option value="Tool M">Tool M</option>
+                      <option value="Tool A">Tool A</option>
+                      <option value="T Sport">T Sport</option>
+                      <option value="T SUV">T SUV</option>
+                      <option value="T Moto">T Moto</option>
+                      <option value="T Offroad">T Offroad</option>
+                      <!-- TAMBAHAN KATEGORI PENGELUARAN -->
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+              
+                  <!-- JUMLAH (dipakai untuk item yang ada harga fix) -->
+                  <div class="form-group">
+                    <label for="trx-qty">Jumlah</label>
+                    <input type="number" id="trx-qty" min="1" value="1" required />
+                  </div>
+              
+                  <!-- NOMINAL: auto untuk kategori fix income, bisa diisi manual untuk Lainnya/pengeluaran -->
+                  <div class="form-group">
+                    <label for="trx-amount">Nominal (IDP$)</label>
+                    <input type="number" id="trx-amount" placeholder="Otomatis / isi sendiri untuk Lainnya" />
+                  </div>
+              
+                  <div class="form-group">
+                    <label for="trx-status">Status</label>
+                    <select id="trx-status" required>
+                      <option value="LUNAS">LUNAS</option>
+                      <option value="BELOM DIBAYAR">BELOM DIBAYAR</option>
+                    </select>
+                  </div>
+              
+                  <div class="form-group">
+                    <label for="trx-mechanic">Mekanik yang Handle</label>
+                    <select id="trx-mechanic">
+                      <option value="">- Tidak ada / Owner -</option>
+                    </select>
+                  </div>
+              
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="trx-note">Keterangan Tambahan</label>
+                    <textarea id="trx-note" placeholder="Contoh: Rep S x2, beli bahan cat, dsb."></textarea>
+                  </div>
+                </div>
+              
+                <div class="btn-row">
+                  <button type="reset" class="btn btn-ghost">Reset</button>
+                  <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Filter & Status</div>
+                  <div class="section-sub">Saring transaksi dan atur status (manager).</div>
+                </div>
+              </div>
+              <div class="filters-row">
+                <div class="filter-input">
+                  <span>Jenis</span>
+                  <select id="filter-type">
+                    <option value="">Semua</option>
+                    <option value="income">Pemasukan</option>
+                    <option value="expense">Pengeluaran</option>
+                  </select>
+                </div>
+                <div class="filter-input">
+                  <span>Mulai</span>
+                  <input type="date" id="filter-start" />
+                </div>
+                <div class="filter-input">
+                  <span>Sampai</span>
+                  <input type="date" id="filter-end" />
+                </div>
+                <div class="filter-input">
+                  <span>Status</span>
+                  <select id="filter-status">
+                    <option value="">Semua</option>
+                    <option value="LUNAS">LUNAS</option>
+                    <option value="BELOM DIBAYAR">BELOM DIBAYAR</option>
+                  </select>
+                </div>
+                <div class="filter-input">
+                  <span>Mekanik</span>
+                  <select id="filter-mechanic">
+                    <option value="">Semua</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Manager only: ubah status massal -->
+              <div id="manager-status-tools" class="mt-2" style="display:none;">
+                <div class="section-sub" style="margin-bottom:4px;">
+                  Manager: ubah status semua transaksi yang sedang tampil (sesuai filter).
+                </div>
+                <div class="filters-row">
+                  <div class="filter-input">
+                    <span>Status baru</span>
+                    <select id="bulk-status-value">
+                      <option value="">Pilih</option>
+                      <option value="LUNAS">LUNAS</option>
+                      <option value="BELOM DIBAYAR">BELOM DIBAYAR</option>
+                    </select>
+                  </div>
+                  <button id="btn-bulk-status" class="btn btn-primary" type="button">
+                    Terapkan ke hasil filter
+                  </button>
+                </div>
+              </div>
+
+              <button id="btn-export" class="btn btn-ghost mt-2" type="button">Export CSV</button>
+              <div class="table-wrapper mt-2">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Jenis</th>
+                      <th>Kategori</th>
+                      <th class="text-right">Nominal</th>
+                      <th>Status</th>
+                      <th>Mekanik</th>
+                      <th>Keterangan</th>
+                      <th class="text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactions-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STOCK -->
+        <section id="page-stock" class="page" style="display:none;">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Manajemen Stock</div>
+              <div class="page-subtitle">Input dan pantau pergerakan stok per kategori.</div>
+            </div>
+            <div class="badge-soft">Manager only · stok hanya bisa diubah oleh manager.</div>
+          </div>
+
+          <div class="layout-two mt-2">
+            <!-- Form movement stok -->
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Input Pergerakan Stock</div>
+                  <div class="section-sub">Tambah / kurangi stok untuk tiap kategori.</div>
+                </div>
+              </div>
+              <form id="stock-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="stock-date">Tanggal</label>
+                    <input type="date" id="stock-date" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="stock-category">Kategori</label>
+                    <select id="stock-category" required>
+                      <option value="">Pilih kategori</option>
+                      <option value="Rep S">Rep S</option>
+                      <option value="Rep X">Rep X</option>
+                      <option value="Rep M">Rep M</option>
+                      <option value="Rep A">Rep A</option>
+                      <option value="Rep B">Rep B</option>
+                      <option value="Rep C">Rep C</option>
+                      <option value="Rep D">Rep D</option>
+                      <option value="Rep F">Rep F</option>
+                      <option value="Nitro">Nitro</option>
+                      <option value="Kanebo">Kanebo</option>
+                      <option value="Tool S">Tool S</option>
+                      <option value="Tool X">Tool X</option>
+                      <option value="Tool M">Tool M</option>
+                      <option value="Tool A">Tool A</option>
+                      <option value="T Sport">T Sport</option>
+                      <option value="T SUV">T SUV</option>
+                      <option value="T Moto">T Moto</option>
+                      <option value="T Offroad">T Offroad</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="stock-direction">Jenis Pergerakan</label>
+                    <select id="stock-direction" required>
+                      <option value="in">Masuk (Tambah stok)</option>
+                      <option value="out">Keluar (Kurangi stok)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="stock-qty">Jumlah</label>
+                    <input type="number" id="stock-qty" min="1" value="1" required />
+                  </div>
+
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="stock-note">Catatan</label>
+                    <textarea id="stock-note" placeholder="Contoh: stok awal, stok dari supplier, adjust fisik, dsb."></textarea>
+                  </div>
+                </div>
+
+                <div class="btn-row">
+                  <button type="reset" class="btn btn-ghost">Reset</button>
+                  <button type="submit" class="btn btn-primary">Simpan Pergerakan</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Rekap stok / riwayat -->
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Rekap Stock per Kategori</div>
+                  <div class="section-sub">Stok terkini dan riwayat movement.</div>
+                </div>
+              </div>
+
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Kategori</th>
+                      <th class="text-right">Stok Sekarang</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stock-rekap-body"></tbody>
+                </table>
+              </div>
+
+              <div class="mt-2 section-sub">Riwayat Pergerakan Stock:</div>
+
+              <!-- FILTER RIWAYAT: Kategori & Jenis berdampingan -->
+              <div class="filters-row nowrap mt-2">
+                <div class="filter-input">
+                  <span>Kategori</span>
+                  <select id="stock-filter-category">
+                    <option value="">Semua</option>
+                    <option value="Rep S">Rep S</option>
+                    <option value="Rep X">Rep X</option>
+                    <option value="Rep M">Rep M</option>
+                    <option value="Rep A">Rep A</option>
+                    <option value="Rep B">Rep B</option>
+                    <option value="Rep C">Rep C</option>
+                    <option value="Rep D">Rep D</option>
+                    <option value="Rep F">Rep F</option>
+                    <option value="Nitro">Nitro</option>
+                    <option value="Kanebo">Kanebo</option>
+                    <option value="Tool S">Tool S</option>
+                    <option value="Tool X">Tool X</option>
+                    <option value="Tool M">Tool M</option>
+                    <option value="Tool A">Tool A</option>
+                    <option value="T Sport">T Sport</option>
+                    <option value="T SUV">T SUV</option>
+                    <option value="T Moto">T Moto</option>
+                    <option value="T Offroad">T Offroad</option>
+                  </select>
+                </div>
+
+                <div class="filter-input">
+                  <span>Jenis</span>
+                  <select id="stock-filter-direction">
+                    <option value="">Semua</option>
+                    <option value="in">Masuk</option>
+                    <option value="out">Keluar</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Tabel riwayat tetap di kartu yang sama -->
+              <div class="table-wrapper mt-2">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Kategori</th>
+                      <th>Jenis</th>
+                      <th class="text-right">Jumlah</th>
+                      <th>Oleh</th>
+                      <th>Catatan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stock-history-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section id="page-reports" class="page" style="display:none;">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Laporan Keuangan</div>
+              <div class="page-subtitle">Ringkasan pemasukan dan pengeluaran.</div>
+            </div>
+            <div class="badge-soft">Manager only · pilih periode → cek hasil.</div>
+          </div>
+
+          <div class="layout-two mt-2">
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Laporan Periode</div>
+                  <div class="section-sub">Pilih bulan & tahun.</div>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="report-month">Bulan</label>
+                  <select id="report-month"></select>
+                </div>
+                <div class="form-group">
+                  <label for="report-year">Tahun</label>
+                  <select id="report-year"></select>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="btn-generate-report" class="btn btn-primary" type="button">Generate Laporan</button>
+              </div>
+              <div class="mt-2" id="report-summary">
+                <div class="empty-state">Belum ada laporan. Pilih bulan & tahun, lalu klik <b>Generate Laporan</b>.</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Laporan Per Mekanik</div>
+                  <div class="section-sub">Ringkas pemasukan per mekanik.</div>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="report-mechanic">Mekanik</label>
+                  <select id="report-mechanic">
+                    <option value="">Pilih mekanik</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="report-mech-month">Bulan</label>
+                  <select id="report-mech-month"></select>
+                </div>
+                <div class="form-group">
+                  <label for="report-mech-year">Tahun</label>
+                  <select id="report-mech-year"></select>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="btn-mechanic-report" class="btn btn-primary" type="button">Lihat Laporan Mekanik</button>
+              </div>
+              <div class="mt-2" id="mechanic-report">
+                <div class="empty-state">Pilih mekanik & periode terlebih dahulu.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MECHANICS -->
+        <section id="page-mechanics" class="page" style="display:none;">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Data Mekanik</div>
+              <div class="page-subtitle">Kelola daftar mekanik bengkel.</div>
+            </div>
+            <div class="badge-soft">Manager only · pengaturan data mekanik.</div>
+          </div>
+
+          <div class="layout-two mt-2">
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Tambah Mekanik</div>
+                  <div class="section-sub">Nama IC mekanik.</div>
+                </div>
+              </div>
+              <form id="mechanic-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="mech-name">Nama Mekanik (IC)</label>
+                    <input type="text" id="mech-name" required placeholder="Contoh: Budi Mechanic" />
+                  </div>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Simpan Mekanik</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Daftar Mekanik</div>
+                  <div class="section-sub">Klik hapus jika sudah tidak aktif.</div>
+                </div>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th class="text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mechanics-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="page-users" class="page" style="display:none;">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Manajemen User</div>
+              <div class="page-subtitle">Kelola akun login untuk aplikasi Ghobeng Finance.</div>
+            </div>
+            <div class="badge-soft">Manager only · pengaturan akun & role.</div>
+          </div>
+
+          <div class="layout-two mt-2">
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Tambah User</div>
+                  <div class="section-sub">Buat akun baru untuk mekanik atau manager.</div>
+                </div>
+              </div>
+
+              <form id="user-form" class="mt-2">
+                <div class="two-cols">
+                  <div class="form-group">
+                    <label for="user-username">Username</label>
+                    <input type="text" id="user-username" required placeholder="Contoh: mekanik2" />
+                  </div>
+                  <div class="form-group">
+                    <label for="user-password">Password</label>
+                    <input type="password" id="user-password" required placeholder="minimal 4 karakter" />
+                  </div>
+                </div>
+
+                <div class="form-group mt-1">
+                  <label for="user-role">Role</label>
+                  <select id="user-role" required>
+                    <option value="mechanic">Mechanic</option>
+                    <option value="manager">Manager</option>
+                  </select>
+                </div>
+
+                <div class="section-actions">
+                  <button type="submit" class="btn btn-primary">Tambah User</button>
+                  <span id="user-form-message" class="badge-soft" style="display:none;"></span>
+                </div>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="section-title-row">
+                <div>
+                  <div class="section-title">Daftar User</div>
+                  <div class="section-sub">User yang bisa login ke aplikasi ini.</div>
+                </div>
+              </div>
+              <div class="table-wrapper mt-2">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Role</th>
+                      <th>Dibuat</th>
+                      <th style="width:80px;">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ===== STORAGE KEYS =====
+    const STORAGE_KEY_TRANSACTIONS = "garagebook_transactions_v1";
+    const STORAGE_KEY_MECHANICS = "garagebook_mechanics_v1";
+    const STORAGE_KEY_USER = "garagebook_current_user_v1";
+    const STORAGE_KEY_STOCK = "garagebook_stock_v1"; // stok
+
+    // ===== USER AUTH (SERVER) =====
+    // User dan password sekarang dikelola di tabel `users` di database.
+    // Login dilakukan via API (api/login.php), bukan lagi array USERS di frontend.
+
+    let currentUser = null;
+
+    // ===== PRICE LIST =====
+    const CATEGORY_PRICE = {
+      "Rep S": 2000,
+      "Rep X": 2000,
+      "Rep M": 2000,
+      "Rep A": 2000,
+      "Rep B": 2000,
+      "Rep C": 2000,
+      "Rep D": 2000,
+      "Rep F": 2000,
+      "Nitro": 8000,
+      "Kanebo": 1000,
+      "Tool S": 5000,
+      "Tool X": 5000,
+      "Tool M": 5000,
+      "Tool A": 5000,
+      "T Sport": 3500,
+      "T SUV": 3500,
+      "T Moto": 3500,
+      "T Offroad": 3500
+    };
+
+    // ===== UTIL =====
+    function loadTransactions() {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_TRANSACTIONS), false);
+        xhr.send(null);
+        if (xhr.status === 200 && xhr.responseText) {
+          return JSON.parse(xhr.responseText);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return [];
+    }
+
+    function saveTransactions(list) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "api/storage.php", false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({
+          key: STORAGE_KEY_TRANSACTIONS,
+          data: list
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function loadMechanics() {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_MECHANICS), false);
+        xhr.send(null);
+        if (xhr.status === 200 && xhr.responseText) {
+          return JSON.parse(xhr.responseText);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return [];
+    }
+
+    function saveMechanics(list) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "api/storage.php", false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({
+          key: STORAGE_KEY_MECHANICS,
+          data: list
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // STOCK util
+    function loadStockMovements() {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_STOCK), false);
+        xhr.send(null);
+        if (xhr.status === 200 && xhr.responseText) {
+          return JSON.parse(xhr.responseText);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return [];
+    }
+
+    function saveStockMovements(list) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "api/storage.php", false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({
+          key: STORAGE_KEY_STOCK,
+          data: list
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function stockTotalsByCategory(stockMovements) {
+      const rekap = {};
+      stockMovements.forEach(m => {
+        const cat = m.category || "-";
+        if (!rekap[cat]) rekap[cat] = 0;
+        const qty = Number(m.qty) || 0;
+        if (m.direction === "in") rekap[cat] += qty;
+        if (m.direction === "out") rekap[cat] -= qty;
+      });
+
+      Object.keys(CATEGORY_PRICE).forEach(cat => {
+        if (rekap[cat] == null) rekap[cat] = 0;
+      });
+
+      return rekap;
+    }
+
+    function getStockRekap(){
+      const movement = loadStockMovements();
+      return stockTotalsByCategory(movement);
+    }
+    
+    function formatCurrency(num) {
+      const n = Number(num) || 0;
+      return "IDP$ " + n.toLocaleString("id-ID");
+    }
+
+
+
+    function todayString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    function getMonthYear(dateStr) {
+      if (!dateStr || dateStr.length < 7) return { month: null, year: null };
+      const [y, m] = dateStr.split("-");
+      return { month: Number(m), year: Number(y) };
+    }
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    }
+
+    // ===== NAVIGATION & ROLE =====
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const pages = document.querySelectorAll(".page");
+    const logoutBtn = document.getElementById("logout-btn");
+    const currentUsernameLabel = document.getElementById("current-username");
+    const currentRoleLabel = document.getElementById("current-role-label");
+    const managerStatusTools = document.getElementById("manager-status-tools");
+
+    // STOCK DOM
+    const stockForm = document.getElementById("stock-form");
+    const stockRekapBody = document.getElementById("stock-rekap-body");
+    const stockHistoryBody = document.getElementById("stock-history-body");
+    const cardStockTotal = document.getElementById("card-stock-total");
+    const stockFilterCategory = document.getElementById("stock-filter-category");
+    const stockFilterDirection = document.getElementById("stock-filter-direction");
+
+    function applyRolePermissions() {
+      if (!currentUser) return;
+      const role = currentUser.role;
+
+      navButtons.forEach(btn => {
+        const pageKey = btn.getAttribute("data-page");
+        if (role === "mechanic") {
+          if (pageKey !== "transactions") {
+            btn.style.display = "none";
+          } else {
+            btn.style.display = "";
+          }
+        } else {
+          btn.style.display = "";
+        }
+      });
+
+      // Atur akses Jenis dan Status di form Transaksi
+      const trxTypeSelect = document.getElementById("trx-type");
+      const trxStatusSelect = document.getElementById("trx-status");
+
+      if (trxTypeSelect) {
+        if (role === "mechanic") {
+          trxTypeSelect.value = "income"; // Mekanik cuma boleh pemasukan
+          trxTypeSelect.disabled = true;
+        } else {
+          trxTypeSelect.disabled = false; // Manager bebas pilih income/expense
+        }
+      }
+
+      if (trxStatusSelect) {
+        if (role === "mechanic") {
+          trxStatusSelect.value = "BELOM DIBAYAR";
+          trxStatusSelect.disabled = true; // Mekanik tidak boleh ganti status
+        } else {
+          trxStatusSelect.disabled = false; // Manager bebas
+          if (!trxStatusSelect.value) trxStatusSelect.value = "LUNAS";
+        }
+      }
+
+      const dashBadge = document.querySelector("#page-dashboard .badge-soft");
+      if (dashBadge) {
+        dashBadge.innerHTML =
+          role === "manager"
+            ? '<span class="badge-dot"></span> Mode Manager · bisa lihat semua data'
+            : '<span class="badge-dot"></span> Mode Mekanik · Dashboard disembunyikan';
+      }
+
+      currentUsernameLabel.textContent = currentUser.username;
+      currentRoleLabel.textContent = role === "manager" ? "Manager" : "Mekanik";
+
+      if (managerStatusTools) {
+        managerStatusTools.style.display = role === "manager" ? "block" : "none";
+      }
+
+      // Kunci form stock untuk selain manager
+      if (stockForm) {
+        const disabled = role !== "manager";
+        Array.from(stockForm.elements).forEach(el => {
+          el.disabled = disabled;
+        });
+      }
+
+      if (role === "mechanic") {
+        showPage("transactions");
+      } else {
+        showPage("dashboard");
+      }
+    }
+
+    function showPage(pageKey) {
+      pages.forEach(p => {
+        p.style.display = p.id === "page-" + pageKey ? "" : "none";
+      });
+      navButtons.forEach(b => {
+        if (b.getAttribute("data-page") === pageKey && b.style.display !== "none") {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!currentUser) return;
+        const role = currentUser.role;
+        const pageKey = btn.getAttribute("data-page");
+
+        if (role === "mechanic" && pageKey !== "transactions") {
+          alert("Mekanik hanya bisa mengakses halaman Transaksi.");
+          showPage("transactions");
+          return;
+        }
+        showPage(pageKey);
+
+        if (pageKey === "users" && role === "manager" && typeof renderUsersTable === "function") {
+          renderUsersTable();
+        }
+      });
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      if (!confirm("Keluar dari akun ini?")) return;
+
+      fetch("api/logout.php", { method: "POST" }).catch(() => {});
+
+      currentUser = null;
+      document.getElementById("app-container").style.display = "none";
+      document.getElementById("login-screen").style.display = "flex";
+    });
+
+    // ===== LOGIN =====
+    const loginForm = document.getElementById("login-form");
+    const loginError = document.getElementById("login-error");
+    const loginScreen = document.getElementById("login-screen");
+    const appContainer = document.getElementById("app-container");
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      fetch("api/login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            loginError.textContent = data.message || "Username atau password salah.";
+            loginError.style.display = "block";
+            return;
+          }
+
+          loginError.style.display = "none";
+          currentUser = {
+            id: data.user.id,
+            username: data.user.username,
+            role: data.user.role
+          };
+
+          loginScreen.style.display = "none";
+          appContainer.style.display = "block";
+
+          applyRolePermissions();
+          refreshMechanicSelects();
+          renderMechanicsTable();
+          renderTransactionsTable();
+          refreshDashboard();
+          refreshStockPage();
+          if (currentUser.role === "manager" && typeof renderUsersTable === "function") {
+            renderUsersTable();
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          loginError.textContent = "Terjadi error koneksi ke server.";
+          loginError.style.display = "block";
+        });
+    });
+
+    // ===== MECHANICS =====
+    const mechanicForm = document.getElementById("mechanic-form");
+    const mechanicsBody = document.getElementById("mechanics-body");
+
+    const trxMechanicSelect = document.getElementById("trx-mechanic");
+    const filterMechanicSelect = document.getElementById("filter-mechanic");
+    const reportMechanicSelect = document.getElementById("report-mechanic");
+
+    function refreshMechanicSelects() {
+      const mechanics = loadMechanics();
+
+      function populateSelect(selectElem, includeEmptyLabel) {
+        const currentValue = selectElem.value;
+        selectElem.innerHTML = "";
+        if (includeEmptyLabel) {
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = includeEmptyLabel;
+          selectElem.appendChild(opt);
+        }
+        mechanics.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m.id;
+          opt.textContent = m.name;
+          selectElem.appendChild(opt);
+        });
+        if (currentValue) {
+          selectElem.value = currentValue;
+        }
+      }
+
+      populateSelect(trxMechanicSelect, "- Tidak ada / Owner -");
+      populateSelect(filterMechanicSelect, "Semua");
+      populateSelect(reportMechanicSelect, "Pilih mekanik");
+    }
+
+    function renderMechanicsTable() {
+      const mechanics = loadMechanics();
+      mechanicsBody.innerHTML = "";
+      if (mechanics.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 2;
+        td.className = "empty-state";
+        td.textContent = "Belum ada mekanik. Tambahkan di form sebelah kiri.";
+        tr.appendChild(td);
+        mechanicsBody.appendChild(tr);
+        return;
+      }
+
+      mechanics.forEach(m => {
+        const tr = document.createElement("tr");
+        const nameTd = document.createElement("td");
+        nameTd.textContent = m.name;
+
+        const actTd = document.createElement("td");
+        actTd.className = "actions";
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger";
+        delBtn.type = "button";
+        delBtn.textContent = "Hapus";
+        delBtn.addEventListener("click", () => {
+          if (confirm("Hapus mekanik ini? Transaksi lama tetap ada, hanya saja nama mekanik tidak akan muncul di daftar.")) {
+            const newList = loadMechanics().filter(x => x.id !== m.id);
+            saveMechanics(newList);
+            refreshMechanicSelects();
+            renderMechanicsTable();
+          }
+        });
+        actTd.appendChild(delBtn);
+
+        tr.appendChild(nameTd);
+        tr.appendChild(actTd);
+        mechanicsBody.appendChild(tr);
+      });
+    }
+
+    if (mechanicForm) {
+      mechanicForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("mech-name").value.trim();
+        if (!name) return;
+        const mechanics = loadMechanics();
+        mechanics.push({ id: generateId(), name });
+        saveMechanics(mechanics);
+        mechanicForm.reset();
+        refreshMechanicSelects();
+        renderMechanicsTable();
+        alert("Mekanik disimpan.");
+      });
+    }
+
+    function getMechanicById(id) {
+      const mechanics = loadMechanics();
+      return mechanics.find(m => m.id === id);
+    }
+
+
+    // ===== USER MANAGEMENT (MANAGER ONLY) =====
+    const userForm = document.getElementById("user-form");
+    const usersBody = document.getElementById("users-body");
+    const userFormMessage = document.getElementById("user-form-message");
+
+    function fetchUsers() {
+      return fetch("api/users.php?action=list")
+        .then(res => {
+          if (!res.ok) throw new Error("Gagal load user");
+          return res.json();
+        })
+        .then(data => data.users || [])
+        .catch(err => {
+          console.error(err);
+          return [];
+        });
+    }
+
+    function renderUsersTable() {
+      if (!usersBody) return;
+      fetchUsers().then(users => {
+        usersBody.innerHTML = "";
+        if (users.length === 0) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.className = "empty-state";
+          td.textContent = "Belum ada user.";
+          tr.appendChild(td);
+          usersBody.appendChild(tr);
+          return;
+        }
+
+        users.forEach(u => {
+          const tr = document.createElement("tr");
+
+          const tdUser = document.createElement("td");
+          tdUser.textContent = u.username;
+
+          const tdRole = document.createElement("td");
+          tdRole.textContent = u.role === "manager" ? "Manager" : "Mechanic";
+
+          const tdCreated = document.createElement("td");
+          tdCreated.textContent = u.created_at || "-";
+
+          const tdActions = document.createElement("td");
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.textContent = "Hapus";
+          delBtn.className = "btn btn-danger";
+          delBtn.addEventListener("click", () => {
+            if (!confirm("Hapus user " + u.username + "?")) return;
+            fetch("api/users.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "delete", id: u.id })
+            })
+              .then(res => res.json())
+              .then(data => {
+                if (!data.success) {
+                  alert(data.message || "Gagal menghapus user");
+                  return;
+                }
+                renderUsersTable();
+              })
+              .catch(err => {
+                console.error(err);
+                alert("Terjadi error saat menghapus user");
+              });
+          });
+
+          tdActions.appendChild(delBtn);
+
+          tr.appendChild(tdUser);
+          tr.appendChild(tdRole);
+          tr.appendChild(tdCreated);
+          tr.appendChild(tdActions);
+          usersBody.appendChild(tr);
+        });
+      });
+    }
+
+    if (userForm) {
+      userForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("user-username").value.trim();
+        const password = document.getElementById("user-password").value;
+        const role = document.getElementById("user-role").value;
+
+        if (!username || !password) {
+          if (userFormMessage) {
+            userFormMessage.textContent = "Username dan password wajib diisi.";
+            userFormMessage.style.display = "inline-block";
+          }
+          return;
+        }
+
+        fetch("api/users.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "create", username, password, role })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (userFormMessage) {
+              userFormMessage.textContent = data.message || (data.success ? "User dibuat." : "Gagal membuat user.");
+              userFormMessage.style.display = "inline-block";
+            }
+            if (!data.success) return;
+
+            document.getElementById("user-username").value = "";
+            document.getElementById("user-password").value = "";
+            document.getElementById("user-role").value = "mechanic";
+            renderUsersTable();
+          })
+          .catch(err => {
+            console.error(err);
+            if (userFormMessage) {
+              userFormMessage.textContent = "Terjadi error koneksi.";
+              userFormMessage.style.display = "inline-block";
+            }
+          });
+      });
+    }
+    // ===== TRANSACTIONS =====
+    const transactionForm = document.getElementById("transaction-form");
+    const transactionsBody = document.getElementById("transactions-body");
+    const latestTransactionsBody = document.getElementById("latest-transactions-body");
+
+    const filterType = document.getElementById("filter-type");
+    const filterStart = document.getElementById("filter-start");
+    const filterEnd = document.getElementById("filter-end");
+    const filterStatus = document.getElementById("filter-status");
+
+    const bulkStatusSelect = document.getElementById("bulk-status-value");
+    const bulkStatusBtn = document.getElementById("btn-bulk-status");
+
+    const cardSaldo = document.getElementById("card-saldo");
+    const cardIncomeToday = document.getElementById("card-income-today");
+    const cardExpenseToday = document.getElementById("card-expense-today");
+    const cardProfitToday = document.getElementById("card-profit-today");
+    const monthlyHighlight = document.getElementById("monthly-highlight");
+
+    function renderTransactionsTable() {
+      const all = loadTransactions();
+      const typeVal = filterType.value;
+      const startVal = filterStart.value;
+      const endVal = filterEnd.value;
+      const mechVal = filterMechanicSelect.value;
+      const statusVal = filterStatus.value;
+
+      let rows = all;
+      if (typeVal) rows = rows.filter(t => t.type === typeVal);
+      if (startVal) rows = rows.filter(t => t.date >= startVal);
+      if (endVal) rows = rows.filter(t => t.date <= endVal);
+      if (mechVal) rows = rows.filter(t => t.mechanicId === mechVal);
+      if (statusVal) rows = rows.filter(t => (t.status || "") === statusVal);
+
+      rows.sort((a, b) => b.date.localeCompare(a.date));
+
+      transactionsBody.innerHTML = "";
+      if (rows.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 8;
+        td.className = "empty-state";
+        td.textContent = "Belum ada transaksi. Tambahkan transaksi di form sebelah kiri.";
+        tr.appendChild(td);
+        transactionsBody.appendChild(tr);
+        return;
+      }
+
+      rows.forEach(trx => {
+        const tr = document.createElement("tr");
+
+        const dateTd = document.createElement("td");
+        dateTd.textContent = trx.date;
+
+        const typeTd = document.createElement("td");
+        const chip = document.createElement("span");
+        chip.className = "chip-type " + (trx.type === "income" ? "chip-income" : "chip-expense");
+        chip.textContent = trx.type === "income" ? "Pemasukan" : "Pengeluaran";
+        typeTd.appendChild(chip);
+
+        const catTd = document.createElement("td");
+        catTd.textContent = trx.category || "-";
+
+        const amountTd = document.createElement("td");
+        amountTd.className = "text-right";
+        amountTd.textContent = formatCurrency(trx.amount);
+
+        const statusTd = document.createElement("td");
+        const statusText = trx.status || "LUNAS";
+        const spanStatus = document.createElement("span");
+        spanStatus.className = "status-badge " + (statusText === "LUNAS" ? "status-lunas" : "status-belom");
+        spanStatus.textContent = statusText;
+        statusTd.appendChild(spanStatus);
+
+        const mechTd = document.createElement("td");
+        const mechName = trx.mechanicName || "-";
+        const mechChip = document.createElement("span");
+        mechChip.className = "chip-mechanic";
+        mechChip.textContent = mechName;
+        mechTd.appendChild(mechChip);
+
+        const noteTd = document.createElement("td");
+        noteTd.textContent = trx.note || "-";
+
+        const actTd = document.createElement("td");
+        actTd.className = "actions";
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn btn-danger";
+        delBtn.textContent = "Hapus";
+        delBtn.addEventListener("click", () => {
+          if (confirm("Hapus transaksi ini?")) {
+            const newList = loadTransactions().filter(t => t.id !== trx.id);
+            saveTransactions(newList);
+            renderTransactionsTable();
+            refreshDashboard();
+          }
+        });
+        actTd.appendChild(delBtn);
+
+        tr.appendChild(dateTd);
+        tr.appendChild(typeTd);
+        tr.appendChild(catTd);
+        tr.appendChild(amountTd);
+        tr.appendChild(statusTd);
+        tr.appendChild(mechTd);
+        tr.appendChild(noteTd);
+        tr.appendChild(actTd);
+        transactionsBody.appendChild(tr);
+      });
+    }
+
+    function renderLatestTransactions() {
+      const all = loadTransactions().slice().sort((a, b) => b.date.localeCompare(a.date));
+      const latest = all.slice(0, 5);
+
+      latestTransactionsBody.innerHTML = "";
+      if (latest.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.className = "empty-state";
+        td.textContent = "Belum ada transaksi terakhir.";
+        tr.appendChild(td);
+        latestTransactionsBody.appendChild(tr);
+        return;
+      }
+
+      latest.forEach(trx => {
+        const tr = document.createElement("tr");
+        const dateTd = document.createElement("td");
+        dateTd.textContent = trx.date;
+
+        const typeTd = document.createElement("td");
+        typeTd.textContent = trx.type === "income" ? "Pemasukan" : "Pengeluaran";
+
+        const catTd = document.createElement("td");
+        catTd.textContent = trx.category || "-";
+
+        const mechTd = document.createElement("td");
+        mechTd.textContent = trx.mechanicName || "-";
+
+        const amountTd = document.createElement("td");
+        amountTd.className = "text-right";
+        amountTd.textContent = formatCurrency(trx.amount);
+
+        tr.appendChild(dateTd);
+        tr.appendChild(typeTd);
+        tr.appendChild(catTd);
+        tr.appendChild(mechTd);
+        tr.appendChild(amountTd);
+        latestTransactionsBody.appendChild(tr);
+      });
+    }
+
+    function refreshStockDashboardCard() {
+      if (!cardStockTotal) return;
+      const rekap = getStockRekap();
+      let total = 0;
+      Object.values(rekap).forEach(v => {
+        const n = Number(v) || 0;
+        if (n > 0) total += n;
+      });
+      cardStockTotal.textContent = total + " item";
+    }
+
+    function refreshDashboard() {
+      const all = loadTransactions();
+      const today = todayString();
+
+      let incomeTotal = 0;
+      let expenseTotal = 0;
+      let incomeToday = 0;
+      let expenseToday = 0;
+
+      all.forEach(t => {
+        const amt = Number(t.amount) || 0;
+        if (t.type === "income") {
+          incomeTotal += amt;
+          if (t.date === today) incomeToday += amt;
+        } else if (t.type === "expense") {
+          expenseTotal += amt;
+          if (t.date === today) expenseToday += amt;
+        }
+      });
+
+      const saldo = incomeTotal - expenseTotal;
+      const profitToday = incomeToday - expenseToday;
+
+      cardSaldo.textContent = formatCurrency(saldo);
+      cardIncomeToday.textContent = formatCurrency(incomeToday);
+      cardExpenseToday.textContent = formatCurrency(expenseToday);
+      cardProfitToday.textContent = formatCurrency(profitToday);
+
+      const now = new Date();
+      const thisMonth = now.getMonth() + 1;
+      const thisYear = now.getFullYear();
+
+      let incomeMonth = 0;
+      let expenseMonth = 0;
+
+      all.forEach(t => {
+        const { month, year } = getMonthYear(t.date);
+        if (month === thisMonth && year === thisYear) {
+          const amt = Number(t.amount) || 0;
+          if (t.type === "income") incomeMonth += amt;
+          else if (t.type === "expense") expenseMonth += amt;
+        }
+      });
+
+      if (incomeMonth === 0 && expenseMonth === 0) {
+        monthlyHighlight.textContent = "Belum ada transaksi di bulan ini.";
+      } else {
+        const profit = incomeMonth - expenseMonth;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        monthlyHighlight.innerHTML =
+          `<div>Bulan ini (${monthNames[thisMonth - 1]} ${thisYear}):</div>
+           <div>Pemasukan: <b>${formatCurrency(incomeMonth)}</b></div>
+           <div>Pengeluaran: <b>${formatCurrency(expenseMonth)}</b></div>
+           <div>Profit bersih: <b>${formatCurrency(profit)}</b></div>`;
+      }
+
+      renderLatestTransactions();
+      refreshStockDashboardCard();
+    }
+
+    // Form transaksi + auto stok keluar
+    if (transactionForm) {
+      document.getElementById("trx-date").value = todayString();
+
+      const categorySelect = document.getElementById("trx-category");
+      const amountInput = document.getElementById("trx-amount");
+      const qtyInput = document.getElementById("trx-qty");
+      const typeSelect = document.getElementById("trx-type");
+      const statusSelect = document.getElementById("trx-status");
+
+      function updateAmountFromCategory() {
+        const cat = categorySelect.value;
+        const type = typeSelect.value;
+        const basePrice = CATEGORY_PRICE[cat] || 0;
+        const qty = Number(qtyInput.value) || 0;
+
+        // Income + kategori punya harga list = auto (nggak bisa diubah)
+        if (type === "income" && basePrice > 0) {
+          amountInput.readOnly = true;
+          amountInput.value = basePrice * (qty || 0);
+        } else {
+          // Pengeluaran atau kategori Lainnya (tanpa harga fix) = bisa diisi manual
+          amountInput.readOnly = false;
+          // Jangan paksa override kalau user sudah isi sendiri
+          if (!amountInput.value) {
+            amountInput.value = "";
+          }
+        }
+      }
+
+      categorySelect.addEventListener("change", updateAmountFromCategory);
+      qtyInput.addEventListener("input", updateAmountFromCategory);
+      typeSelect.addEventListener("change", updateAmountFromCategory);
+
+      transactionForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const date = document.getElementById("trx-date").value;
+        const type = typeSelect.value; // income / expense
+        const category = categorySelect.value;
+        const qty = Number(qtyInput.value) || 0;
+        const basePrice = CATEGORY_PRICE[category] || 0;
+        // Mekanik sudah dikunci statusnya di applyRolePermissions, tapi kita tetap baca value
+        const status = statusSelect.value || "LUNAS";
+        const mechanicId = document.getElementById("trx-mechanic").value || null;
+        const mechanic = mechanicId ? getMechanicById(mechanicId) : null;
+        const mechanicName = mechanic ? mechanic.name : "";
+        const note = document.getElementById("trx-note").value.trim();
+
+        if (!date || !category) {
+          alert("Tanggal dan kategori wajib diisi.");
+          return;
+        }
+
+        if (type === "income") {
+          if (qty <= 0) {
+            alert("Jumlah minimal 1 untuk pemasukan.");
+            return;
+          }
+        }
+
+        let amount;
+        // Income + kategori list = hitung dari harga x jumlah
+        if (type === "income" && basePrice > 0) {
+          amount = basePrice * qty;
+        } else {
+          // Expense atau Lainnya = ambil dari input manual
+          amount = Number(amountInput.value) || 0;
+        }
+
+        if (amount <= 0) {
+          alert("Nominal harus lebih dari 0.");
+          return;
+        }
+
+        const trx = {
+          id: generateId(),
+          date,
+          type,
+          category,
+          qty,
+          unitPrice: basePrice > 0 ? basePrice : null,
+          amount,
+          status,
+          mechanicId,
+          mechanicName,
+          note
+        };
+
+        // Simpan transaksi
+        const list = loadTransactions();
+        list.push(trx);
+        saveTransactions(list);
+
+        // AUTO: kurangi stok kalau transaksi pemasukan dan kategori punya stock
+        // Asumsi: income = barang/jasa dipakai keluar dari stok
+        if (type === "income" && CATEGORY_PRICE[category]) {
+          const stockMovements = loadStockMovements();
+          stockMovements.push({
+            id: generateId(),
+            date,
+            category,
+            direction: "out",
+            qty,
+            note: "Auto keluar stok dari transaksi",
+            createdBy: currentUser ? currentUser.username : "system"
+          });
+          saveStockMovements(stockMovements);
+          refreshStockPage();
+          refreshStockDashboardCard();
+        }
+
+        // Reset form
+        transactionForm.reset();
+        document.getElementById("trx-date").value = todayString();
+        typeSelect.value = "income";
+
+        // Set default status sesuai role:
+        if (currentUser && currentUser.role === "mechanic") {
+          statusSelect.value = "BELOM DIBAYAR";
+        } else {
+          statusSelect.value = "LUNAS";
+        }
+
+        categorySelect.value = "";
+        qtyInput.value = 1;
+        amountInput.value = "";
+
+        // Pastikan rule role tetap (supaya mekanik tetap terkunci)
+        applyRolePermissions();
+        renderTransactionsTable();
+        refreshDashboard();
+        alert("Transaksi disimpan.");
+      });
+    }
+
+    [filterType, filterStart, filterEnd, filterMechanicSelect, filterStatus].forEach(el => {
+      if (el) el.addEventListener("change", () => renderTransactionsTable());
+    });
+
+    // Manager: ubah status massal sesuai filter
+    if (bulkStatusBtn) {
+      bulkStatusBtn.addEventListener("click", () => {
+        if (!currentUser || currentUser.role !== "manager") {
+          alert("Hanya manager yang bisa mengubah status di sini.");
+          return;
+        }
+        const newStatus = bulkStatusSelect.value;
+        if (!newStatus) {
+          alert("Pilih status baru terlebih dahulu.");
+          return;
+        }
+
+        const all = loadTransactions();
+        const typeVal = filterType.value;
+        const startVal = filterStart.value;
+        const endVal = filterEnd.value;
+        const mechVal = filterMechanicSelect.value;
+        const statusVal = filterStatus.value;
+
+        let changed = 0;
+        all.forEach(t => {
+          let ok = true;
+          if (typeVal && t.type !== typeVal) ok = false;
+          if (startVal && t.date < startVal) ok = false;
+          if (endVal && t.date > endVal) ok = false;
+          if (mechVal && t.mechanicId !== mechVal) ok = false;
+          if (statusVal && (t.status || "") !== statusVal) ok = false;
+
+          if (ok) {
+            t.status = newStatus;
+            changed++;
+          }
+        });
+
+        if (changed === 0) {
+          alert("Tidak ada transaksi yang cocok dengan filter.");
+          return;
+        }
+
+        saveTransactions(all);
+        renderTransactionsTable();
+        alert("Status diperbarui untuk " + changed + " transaksi.");
+      });
+    }
+
+    // ===== EXPORT CSV =====
+    document.getElementById("btn-export").addEventListener("click", () => {
+      const all = loadTransactions();
+      if (all.length === 0) {
+        alert("Belum ada transaksi untuk di-export.");
+        return;
+      }
+      const header = [
+        "Tanggal",
+        "Jenis",
+        "Kategori",
+        "Nominal",
+        "Status",
+        "Mekanik",
+        "Keterangan"
+      ];
+      const rows = all.map(t => [
+        t.date,
+        t.type === "income" ? "Pemasukan" : "Pengeluaran",
+        t.category || "",
+        t.amount,
+        t.status || "",
+        t.mechanicName || "",
+        (t.note || "").replace(/\r?\n/g, " ")
+      ]);
+      const csv = [header, ...rows]
+        .map(r => r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "keuangan_bengkel.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // ===== REPORTS =====
+    const reportMonth = document.getElementById("report-month");
+    const reportYear = document.getElementById("report-year");
+    const reportMechMonth = document.getElementById("report-mech-month");
+    const reportMechYear = document.getElementById("report-mech-year");
+    const reportSummary = document.getElementById("report-summary");
+    const mechanicReport = document.getElementById("mechanic-report");
+
+    function populateMonthYearSelects() {
+      const monthSelects = [reportMonth, reportMechMonth];
+      const yearSelects = [reportYear, reportMechYear];
+
+      const monthNames = ["01 - Jan", "02 - Feb", "03 - Mar", "04 - Apr", "05 - Mei", "06 - Jun", "07 - Jul", "08 - Agu", "09 - Sep", "10 - Okt", "11 - Nov", "12 - Des"];
+
+      monthSelects.forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = "";
+        monthNames.forEach((label, idx) => {
+          const opt = document.createElement("option");
+          opt.value = idx + 1;
+          opt.textContent = label;
+          sel.appendChild(opt);
+        });
+      });
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const yearsRange = [];
+      for (let y = currentYear - 3; y <= currentYear + 1; y++) {
+        yearsRange.push(y);
+      }
+
+      yearSelects.forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = "";
+        yearsRange.forEach(y => {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          sel.appendChild(opt);
+        });
+      });
+
+      if (reportMonth) reportMonth.value = now.getMonth() + 1;
+      if (reportMechMonth) reportMechMonth.value = now.getMonth() + 1;
+      if (reportYear) reportYear.value = currentYear;
+      if (reportMechYear) reportMechYear.value = currentYear;
+    }
+
+    document.getElementById("btn-generate-report").addEventListener("click", () => {
+      const m = Number(reportMonth.value);
+      const y = Number(reportYear.value);
+      const all = loadTransactions();
+      let income = 0;
+      let expense = 0;
+      const perCategory = {};
+
+      all.forEach(t => {
+        const { month, year } = getMonthYear(t.date);
+        if (month === m && year === y) {
+          const amt = Number(t.amount) || 0;
+          if (t.type === "income") income += amt;
+          else if (t.type === "expense") expense += amt;
+
+          const key = t.category || "Lainnya";
+          if (!perCategory[key]) perCategory[key] = { income: 0, expense: 0 };
+          if (t.type === "income") perCategory[key].income += amt;
+          else perCategory[key].expense += amt;
+        }
+      });
+
+      if (income === 0 && expense === 0) {
+        reportSummary.innerHTML = `<div class="empty-state">Tidak ada transaksi di bulan ini.</div>`;
+        return;
+      }
+
+      const profit = income - expense;
+      let html = "";
+      html += `<div class="section-sub" style="margin-bottom:6px;">Ringkasan bulan ${m.toString().padStart(2,"0")}/${y}</div>`;
+      html += `<div>Pemasukan: <b>${formatCurrency(income)}</b></div>`;
+      html += `<div>Pengeluaran: <b>${formatCurrency(expense)}</b></div>`;
+      html += `<div>Profit bersih: <b>${formatCurrency(profit)}</b></div>`;
+      html += `<div class="mt-2 section-sub">Rincian per kategori:</div>`;
+      html += `<div class="table-wrapper mt-2"><table><thead><tr><th>Kategori</th><th>Pemasukan</th><th>Pengeluaran</th></tr></thead><tbody>`;
+      Object.keys(perCategory).forEach(cat => {
+        const c = perCategory[cat];
+        html += `<tr>
+          <td>${cat}</td>
+          <td>${formatCurrency(c.income)}</td>
+          <td>${formatCurrency(c.expense)}</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      reportSummary.innerHTML = html;
+    });
+
+    document.getElementById("btn-mechanic-report").addEventListener("click", () => {
+      const mechId = reportMechanicSelect.value;
+      if (!mechId) {
+        alert("Pilih mekanik terlebih dahulu.");
+        return;
+      }
+      const m = Number(reportMechMonth.value);
+      const y = Number(reportMechYear.value);
+
+      const mech = getMechanicById(mechId);
+      if (!mech) {
+        alert("Data mekanik tidak ditemukan.");
+        return;
+      }
+
+      const all = loadTransactions();
+      let mechIncome = 0;
+      let jobCount = 0;
+
+      all.forEach(t => {
+        const { month, year } = getMonthYear(t.date);
+        if (month === m && year === y && t.mechanicId === mechId && t.type === "income") {
+          const amt = Number(t.amount) || 0;
+          mechIncome += amt;
+          jobCount++;
+        }
+      });
+
+      if (jobCount === 0) {
+        mechanicReport.innerHTML = `<div class="empty-state">Tidak ada pergerakan untuk mekanik <b>${mech.name}</b> di periode ini.</div>`;
+        return;
+      }
+
+      let html = "";
+      html += `<div>Mekanik: <b>${mech.name}</b></div>`;
+      html += `<div>Periode: <b>${m.toString().padStart(2,"0")}/${y}</b></div>`;
+      html += `<div>Total pergerakan: <b>${jobCount}</b></div>`;
+      html += `<div>Total pemasukan dari pergerakan-nya: <b>${formatCurrency(mechIncome)}</b></div>`;
+      html += `<div class="section-sub">Gunakan angka ini jika ingin bagi hasil secara manual.</div>`;
+      mechanicReport.innerHTML = html;
+    });
+
+    // ===== STOCK RENDERING =====
+        function renderStockRekapTable() {
+          if (!stockRekapBody) return;
+
+          const rekap = getStockRekap();
+          const cats = Object.keys(rekap).sort();
+          stockRekapBody.innerHTML = "";
+
+          if (cats.length === 0) {
+            const tr = document.createElement("tr");
+            const td = document.createElement("td");
+            td.colSpan = 2;
+            td.className = "empty-state";
+            td.textContent = "Belum ada data stok. Input pergerakan stok terlebih dahulu.";
+            tr.appendChild(td);
+            stockRekapBody.appendChild(tr);
+            return;
+          }
+
+          cats.forEach(cat => {
+            const tr = document.createElement("tr");
+            const tdCat = document.createElement("td");
+            tdCat.textContent = cat;
+
+            const tdQty = document.createElement("td");
+            tdQty.className = "text-right";
+            tdQty.textContent = (rekap[cat] || 0) + " item";
+
+            tr.appendChild(tdCat);
+            tr.appendChild(tdQty);
+            stockRekapBody.appendChild(tr);
+          });
+        }
+
+      if (stockFilterCategory) {
+        stockFilterCategory.addEventListener("change", () => {
+          renderStockHistoryTable();
+        });
+      }
+
+      function renderStockHistoryTable() {
+      if (!stockHistoryBody) return;
+
+      const selectedCat = stockFilterCategory ? stockFilterCategory.value : "";
+      const selectedDir = stockFilterDirection ? stockFilterDirection.value : "";
+
+      const all = loadStockMovements().slice().sort((a, b) => b.date.localeCompare(a.date));
+
+      const rows = all.filter(m => {
+        if (selectedCat && m.category !== selectedCat) return false;
+        if (selectedDir && m.direction !== selectedDir) return false;
+        return true;
+      });
+
+      stockHistoryBody.innerHTML = "";
+
+      if (rows.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 6;
+        td.className = "empty-state";
+        const jenisLabel = selectedDir ? (selectedDir === "in" ? "Masuk" : "Keluar") : "";
+        td.textContent =
+          selectedCat && selectedDir
+            ? `Belum ada pergerakan stok ${jenisLabel} untuk kategori "${selectedCat}".`
+            : selectedCat
+            ? `Belum ada pergerakan stok untuk kategori "${selectedCat}".`
+            : selectedDir
+            ? `Belum ada pergerakan stok ${jenisLabel}.`
+            : "Belum ada pergerakan stok.";
+        tr.appendChild(td);
+        stockHistoryBody.appendChild(tr);
+        return;
+      }
+
+      rows.forEach(m => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${m.date}</td>
+          <td>${m.category || "-"}</td>
+          <td>${m.direction === "in" ? "Masuk" : "Keluar"}</td>
+          <td class="text-right">${(Number(m.qty) || 0)} item</td>
+          <td>${m.createdBy || "-"}</td>
+          <td>${m.note || "-"}</td>
+        `;
+        stockHistoryBody.appendChild(tr);
+      });
+    }
+
+    function refreshStockPage() {
+      renderStockRekapTable();
+      renderStockHistoryTable();
+    }
+
+    if (stockFilterCategory) {
+      stockFilterCategory.addEventListener("change", () => {
+        renderStockHistoryTable();
+      });
+    }
+
+    if (stockFilterDirection) {
+      stockFilterDirection.addEventListener("change", () => {
+        renderStockHistoryTable();
+      });
+    }
+
+    // ===== STOCK FORM =====
+    if (stockForm) {
+      const stockDateInput = document.getElementById("stock-date");
+      const stockCategorySelect = document.getElementById("stock-category");
+      const stockDirectionSelect = document.getElementById("stock-direction");
+      const stockQtyInput = document.getElementById("stock-qty");
+      const stockNoteInput = document.getElementById("stock-note");
+
+      stockDateInput.value = todayString();
+
+      stockForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!currentUser || currentUser.role !== "manager") {
+          alert("Hanya manager yang boleh menginput stok.");
+          return;
+        }
+
+        const date = stockDateInput.value;
+        const category = stockCategorySelect.value;
+        const direction = stockDirectionSelect.value; // in / out
+        const qty = Number(stockQtyInput.value) || 0;
+        const note = stockNoteInput.value.trim();
+
+        if (!date || !category) {
+          alert("Tanggal dan kategori wajib diisi.");
+          return;
+        }
+        if (qty <= 0) {
+          alert("Jumlah stok harus lebih dari 0.");
+          return;
+        }
+
+        const movements = loadStockMovements();
+        movements.push({
+          id: generateId(),
+          date,
+          category,
+          direction,
+          qty,
+          note,
+          createdBy: currentUser.username
+        });
+        saveStockMovements(movements);
+
+        stockForm.reset();
+        stockDateInput.value = todayString();
+        stockDirectionSelect.value = "in";
+        stockQtyInput.value = 1;
+
+        refreshStockPage();
+        refreshStockDashboardCard();
+        alert("Pergerakan stok disimpan.");
+      });
+    }
+
+    // ===== INITIAL LOAD =====
+    window.addEventListener("DOMContentLoaded", () => {
+      populateMonthYearSelects();
+      // Di awal muat, paksa user login dulu di server.
+      loginScreen.style.display = "flex";
+      appContainer.style.display = "none";
+    });
+  </script>
+</body>
+</html>
