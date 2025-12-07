@@ -1124,11 +1124,11 @@
                       <th>Tanggal</th>
                       <th>Jenis</th>
                       <th>Kategori</th>
-                      <th class="text-right">Nominal</th>
+                      <th>Jumlah</th>
+                      <th>Nominal</th>
                       <th>Status</th>
                       <th>Mekanik</th>
-                      <th>Keterangan</th>
-                      <th class="text-right">Aksi</th>
+                      <th style="width: 80px;">Aksi</th>
                     </tr>
                   </thead>
                   <tbody id="transactions-body"></tbody>
@@ -1735,11 +1735,6 @@
         });
       }
 
-      if (role === "mechanic") {
-        showPage("transactions");
-      } else {
-        showPage("dashboard");
-      }
     }
 
     function showPage(pageKey) {
@@ -2139,7 +2134,8 @@
         mechTd.appendChild(mechChip);
 
         const noteTd = document.createElement("td");
-        noteTd.textContent = trx.note || "-";
+        const qtyVal = Number(trx.qty) || 0;
+        noteTd.textContent = qtyVal > 0 ? qtyVal : "-";
 
         const actTd = document.createElement("td");
         actTd.className = "actions";
@@ -2160,10 +2156,10 @@
         tr.appendChild(dateTd);
         tr.appendChild(typeTd);
         tr.appendChild(catTd);
+        tr.appendChild(noteTd);
         tr.appendChild(amountTd);
         tr.appendChild(statusTd);
         tr.appendChild(mechTd);
-        tr.appendChild(noteTd);
         tr.appendChild(actTd);
         transactionsBody.appendChild(tr);
       });
@@ -2319,6 +2315,8 @@
 
       transactionForm.addEventListener("submit", (e) => {
         e.preventDefault();
+        // Simpan mekanik yang sedang dipilih supaya tidak hilang setelah form direset
+        const selectedMechanicId = document.getElementById("trx-mechanic").value || null;
         const date = document.getElementById("trx-date").value;
         const type = typeSelect.value; // income / expense
         const category = categorySelect.value;
@@ -2326,7 +2324,7 @@
         const basePrice = CATEGORY_PRICE[category] || 0;
         // Mekanik sudah dikunci statusnya di applyRolePermissions, tapi kita tetap baca value
         const status = statusSelect.value || "LUNAS";
-        const mechanicId = document.getElementById("trx-mechanic").value || null;
+        const mechanicId = selectedMechanicId;
         const mechanic = mechanicId ? getMechanicById(mechanicId) : null;
         const mechanicName = mechanic ? mechanic.name : "";
         const note = document.getElementById("trx-note").value.trim();
@@ -2414,6 +2412,12 @@
         applyRolePermissions();
         renderTransactionsTable();
         refreshDashboard();
+
+        // Kembalikan pilihan mekanik seperti sebelum simpan
+        if (selectedMechanicId) {
+          document.getElementById("trx-mechanic").value = selectedMechanicId;
+        }
+
         alert("Transaksi disimpan.");
       });
     }
@@ -2479,19 +2483,19 @@
         "Tanggal",
         "Jenis",
         "Kategori",
+        "Jumlah",
         "Nominal",
         "Status",
-        "Mekanik",
-        "Keterangan"
+        "Mekanik"
       ];
       const rows = all.map(t => [
         t.date,
         t.type === "income" ? "Pemasukan" : "Pengeluaran",
         t.category || "",
+        (Number(t.qty) || 0),
         t.amount,
         t.status || "",
-        t.mechanicName || "",
-        (t.note || "").replace(/\r?\n/g, " ")
+        t.mechanicName || ""
       ]);
       const csv = [header, ...rows]
         .map(r => r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
