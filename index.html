@@ -749,6 +749,142 @@
       margin-top: 6px;
       color: #a7f3d0;
     }
+
+    /* ===== Scrollable table wrappers for transaksi & stock ===== */
+    .table-wrapper {
+      max-height: 420px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+    }
+
+    /* ==== DESKTOP: limit tinggi tabel riwayat stok (±10 baris) ==== */
+    @media (min-width: 769px) {
+      #stock-history-wrapper {
+        max-height: 320px;   /* kira-kira 10 baris, bisa disesuaikan */
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+    }
+
+    /* ===== Mobile friendly layout ===== */
+    @media (max-width: 768px) {
+      body {
+        font-size: 13px;
+      }
+
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .main {
+        padding: 10px;
+      }
+
+      .layout-two {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      table {
+        font-size: 11px;
+      }
+
+      th, td {
+        padding: 6px 8px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        font-size: 16px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        width: 240px;
+        height: 100vh;
+        background: var(--card);
+        transition: all 0.25s ease;
+        z-index: 2000;
+        border-right: 1px solid var(--border);
+        padding-top: 60px;
+        overflow-y: auto;
+      }
+
+      .sidebar.show {
+        left: 0;
+      }
+
+      /* backdrop */
+      .sidebar-backdrop {
+        display: none;
+      }
+      .sidebar-backdrop.active {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1500;
+      }
+
+      /* Main content turun sedikit */
+      .main {
+        padding-top: 6px;
+      }
+    }
+
+    /* ===== MINIMALIST SCROLLBAR (DESKTOP) ===== */
+    .table-wrapper::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+
+    .table-wrapper {
+      scrollbar-color: #bdbdbd transparent; /* Firefox */
+      scrollbar-width: thin;
+    }
+
   </style>
 </head>
 <body>
@@ -783,6 +919,7 @@
 
   <!-- APP -->
   <div id="app-container">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰ Menu</button>
     <div class="app-shell">
       <!-- SIDEBAR -->
       <aside class="sidebar">
@@ -1145,7 +1282,10 @@
               <div class="page-title">Manajemen Stock</div>
               <div class="page-subtitle">Input dan pantau pergerakan stok per kategori.</div>
             </div>
-            <div class="badge-soft">Manager only · stok hanya bisa diubah oleh manager.</div>
+            <div class="badge-soft">
+              <span class="badge-dot"></span>
+              Mode Manager · Stock hanya bisa diubah manager.
+            </div>
           </div>
 
           <div class="layout-two mt-2">
@@ -1276,7 +1416,7 @@
               </div>
 
               <!-- Tabel riwayat tetap di kartu yang sama -->
-              <div class="table-wrapper mt-2">
+              <div class="table-wrapper mt-2" id="stock-history-wrapper">
                 <table>
                   <thead>
                     <tr>
@@ -1302,7 +1442,10 @@
               <div class="page-title">Laporan Keuangan</div>
               <div class="page-subtitle">Ringkasan pemasukan dan pengeluaran.</div>
             </div>
-            <div class="badge-soft">Manager only · pilih periode → cek hasil.</div>
+            <div class="badge-soft">
+              <span class="badge-dot"></span>
+              Mode Manager · Pilih periode → cek hasil.
+            </div>
           </div>
 
           <div class="layout-two mt-2">
@@ -1371,7 +1514,10 @@
               <div class="page-title">Data Mekanik</div>
               <div class="page-subtitle">Kelola daftar mekanik bengkel.</div>
             </div>
-            <div class="badge-soft">Manager only · pengaturan data mekanik.</div>
+            <div class="badge-soft">
+              <span class="badge-dot"></span>
+              Mode Manager · Pengaturan data mekanik.
+            </div>
           </div>
 
           <div class="layout-two mt-2">
@@ -2472,44 +2618,184 @@
       });
     }
 
-    // ===== EXPORT CSV =====
-    document.getElementById("btn-export").addEventListener("click", () => {
+        // ===== EXPORT KE EXCEL =====
+        document.getElementById("btn-export").addEventListener("click", () => {
       const all = loadTransactions();
-      if (all.length === 0) {
+      if (!all.length) {
         alert("Belum ada transaksi untuk di-export.");
         return;
       }
+
+      // --- ambil filter yang ada di halaman ---
+      const typeVal = filterType.value;
+      const startVal = filterStart.value;
+      const endVal = filterEnd.value;
+      const mechVal = filterMechanicSelect.value;
+      const statusVal = filterStatus.value;
+
+      let rowsData = all;
+
+      if (typeVal) {
+        rowsData = rowsData.filter(t => t.type === typeVal);
+      }
+
+      // fungsi bantu: ubah "YYYY-MM-DD" jadi timestamp
+      const parseDate = (str) => {
+        if (!str) return null;
+        const parts = str.split("-");
+        if (parts.length !== 3) return null;
+        const y = Number(parts[0]);
+        const m = Number(parts[1]) - 1;
+        const d = Number(parts[2]);
+        return new Date(y, m, d).getTime();
+      };
+
+      const startTs = parseDate(startVal);
+      const endTs = parseDate(endVal);
+
+      if (startTs) {
+        rowsData = rowsData.filter(t => {
+          const tTs = parseDate(t.date);
+          return tTs && tTs >= startTs;
+        });
+      }
+
+      if (endTs) {
+        rowsData = rowsData.filter(t => {
+          const tTs = parseDate(t.date);
+          return tTs && tTs <= endTs;
+        });
+      }
+
+      if (mechVal) {
+        rowsData = rowsData.filter(t => t.mechanicId === mechVal);
+      }
+
+      if (statusVal) {
+        rowsData = rowsData.filter(t => (t.status || "") === statusVal);
+      }
+
+      if (!rowsData.length) {
+        alert("Tidak ada transaksi yang cocok dengan filter untuk di-export.");
+        return;
+      }
+
+      // urutkan berdasarkan tanggal
+      rowsData = rowsData.slice().sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+
+      // hitung total nominal dan total qty komponen
+      const totalAmount = rowsData.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+      const totalQty = rowsData.reduce((sum, t) => sum + (Number(t.qty) || 0), 0);
+
+      // header kolom
       const header = [
         "Tanggal",
         "Jenis",
         "Kategori",
-        "Jumlah",
         "Nominal",
         "Status",
-        "Mekanik"
+        "Mekanik",
+        "Jumlah komponen yang diambil"
       ];
-      const rows = all.map(t => [
-        t.date,
-        t.type === "income" ? "Pemasukan" : "Pengeluaran",
-        t.category || "",
-        (Number(t.qty) || 0),
-        t.amount,
-        t.status || "",
-        t.mechanicName || ""
-      ]);
-      const csv = [header, ...rows]
-        .map(r => r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
-        .join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+      // teks filter untuk bagian meta laporan
+      let periodeText = "Semua tanggal";
+      if (startVal && endVal) {
+        periodeText = `${startVal} s.d. ${endVal}`;
+      } else if (startVal) {
+        periodeText = `>= ${startVal}`;
+      } else if (endVal) {
+        periodeText = `<= ${endVal}`;
+      }
+
+      const jenisText = typeVal
+        ? (typeVal === "income" ? "Pemasukan" : "Pengeluaran")
+        : "Semua";
+
+      let mekanikFilterText = "Semua";
+      if (mechVal) {
+        const opt = filterMechanicSelect.options[filterMechanicSelect.selectedIndex];
+        mekanikFilterText = opt ? opt.textContent : "Mekanik dipilih";
+      }
+
+      const statusFilterText = statusVal || "Semua";
+
+      const escapeHtml = (str) =>
+        String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+
+      const colCount = header.length;
+
+      let html = "<html><head><meta charset='UTF-8'><style>";
+      html += "body{font-family:Arial,Helvetica,sans-serif;font-size:12px;}";
+      html += "table{border-collapse:collapse;width:100%;}";
+      html += "th,td{border:1px solid #d1d5db;padding:4px 6px;font-size:12px;}";
+      html += "th{background:#16a34a;color:#ffffff;text-align:left;}";
+      html += "tr:nth-child(even) td{background:#f9fafb;}";
+      html += ".title-row th{background:#0f172a;color:#ffffff;font-size:14px;padding:8px 6px;}";
+      html += ".meta-label{font-weight:bold;width:140px;background:#e5e7eb;}";
+      html += ".meta-value{background:#f9fafb;}";
+      html += ".currency{mso-number-format:'\\0022IDP$\\0022 #,##0';text-align:right;}";
+      html += ".number{mso-number-format:'#,##0';text-align:right;}";
+      html += "table.summary{margin-top:16px;width:auto;}";
+      html += "table.summary th{background:#0f172a;color:#ffffff;}";
+      html += "table.summary td{background:#f9fafb;}";
+      html += "</style></head><body>";
+
+      // Tabel utama
+      html += "<table>";
+      html += `<tr class="title-row"><th colspan="${colCount}">Laporan Keuangan Bengkel Gho Auto Repair</th></tr>`;
+      html += `<tr><td class="meta-label">Periode</td><td class="meta-value" colspan="${colCount - 1}">${escapeHtml(periodeText)}</td></tr>`;
+      html += `<tr><td class="meta-label">Filter Jenis</td><td class="meta-value" colspan="${colCount - 1}">${escapeHtml(jenisText)}</td></tr>`;
+      html += `<tr><td class="meta-label">Filter Mekanik</td><td class="meta-value" colspan="${colCount - 1}">${escapeHtml(mekanikFilterText)}</td></tr>`;
+      html += `<tr><td class="meta-label">Filter Status</td><td class="meta-value" colspan="${colCount - 1}">${escapeHtml(statusFilterText)}</td></tr>`;
+      html += "<tr><td colspan=\"" + colCount + "\"></td></tr>";
+
+      // header tabel data
+      html += "<tr>";
+      header.forEach(h => {
+        html += "<th>" + escapeHtml(h) + "</th>";
+      });
+      html += "</tr>";
+
+      // isi tabel data
+      rowsData.forEach(t => {
+        html += "<tr>";
+        html += "<td>" + escapeHtml(t.date || "") + "</td>";
+        html += "<td>" + escapeHtml(t.type === "income" ? "Pemasukan" : "Pengeluaran") + "</td>";
+        html += "<td>" + escapeHtml(t.category || "") + "</td>";
+        html += `<td class="currency">${Number(t.amount) || 0}</td>`;
+        html += "<td>" + escapeHtml(t.status || "") + "</td>";
+        html += "<td>" + escapeHtml(t.mechanicName || "") + "</td>";
+        html += `<td class="number">${Number(t.qty) || 0}</td>`;
+        html += "</tr>";
+      });
+
+      html += "</table>";
+
+      // Tabel ringkasan total
+      html += "<br/><table class=\"summary\">";
+      html += "<tr><th colspan=\"2\">Ringkasan Total</th></tr>";
+      html += `<tr><td>Total Nominal</td><td class="currency">${totalAmount}</td></tr>`;
+      html += `<tr><td>Total Jumlah Komponen</td><td class="number">${totalQty}</td></tr>`;
+      html += "</table>";
+
+      html += "</body></html>";
+
+      const blob = new Blob([html], { type: "application/vnd.ms-excel" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "keuangan_bengkel.csv";
+      a.download = "laporan_keuangan_bengkel.xls";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
+
 
     // ===== REPORTS =====
     const reportMonth = document.getElementById("report-month");
@@ -2818,6 +3104,22 @@
       loginScreen.style.display = "flex";
       appContainer.style.display = "none";
     });
+  </script>
+
+  <script>
+    function toggleSidebar() {
+      const sb = document.querySelector(".sidebar");
+      sb.classList.toggle("show");
+
+      let backdrop = document.querySelector(".sidebar-backdrop");
+      if (!backdrop) {
+        backdrop = document.createElement("div");
+        backdrop.className = "sidebar-backdrop";
+        backdrop.onclick = toggleSidebar;
+        document.body.appendChild(backdrop);
+      }
+      backdrop.classList.toggle("active");
+    }
   </script>
 </body>
 </html>
