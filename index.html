@@ -2285,27 +2285,56 @@
 
         const actTd = document.createElement("td");
         actTd.className = "actions";
-        const delBtn = document.createElement("button");
-        delBtn.type = "button";
-        delBtn.className = "btn btn-danger";
-        delBtn.textContent = "Hapus";
-        delBtn.addEventListener("click", () => {
-          if (confirm("Hapus transaksi ini?")) {
+
+        // Hanya manager yang boleh menghapus transaksi
+        if (currentUser && currentUser.role === "manager") {
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "btn btn-danger";
+          delBtn.textContent = "Hapus";
+          delBtn.addEventListener("click", () => {
+            if (!confirm("Hapus transaksi ini?")) return;
+
+            // Jika transaksi pemasukan dengan kategori yang memakai stok,
+            // kembalikan stoknya (karena saat simpan dulu stok otomatis berkurang).
+            if (trx.type === "income" && CATEGORY_PRICE[trx.category]) {
+              const movements = loadStockMovements();
+              const qtyRestore = Number(trx.qty) || 0;
+              if (qtyRestore > 0) {
+                movements.push({
+                  id: generateId(),
+                  date: todayString(),
+                  category: trx.category,
+                  direction: "in",
+                  qty: qtyRestore,
+                  note: "Auto kembali stok karena hapus transaksi",
+                  createdBy: currentUser ? currentUser.username : "system"
+                });
+                saveStockMovements(movements);
+              }
+            }
+
             const newList = loadTransactions().filter(t => t.id !== trx.id);
             saveTransactions(newList);
+
             renderTransactionsTable();
             refreshDashboard();
-          }
-        });
-        actTd.appendChild(delBtn);
+            refreshStockPage();
+            refreshStockDashboardCard();
+          });
+          actTd.appendChild(delBtn);
+        } else {
+          // Mekanik tidak punya tombol hapus
+          actTd.textContent = "-";
+        }
 
         tr.appendChild(dateTd);
         tr.appendChild(typeTd);
         tr.appendChild(catTd);
-        tr.appendChild(noteTd);
         tr.appendChild(amountTd);
         tr.appendChild(statusTd);
         tr.appendChild(mechTd);
+        tr.appendChild(noteTd);
         tr.appendChild(actTd);
         transactionsBody.appendChild(tr);
       });
