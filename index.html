@@ -1218,6 +1218,30 @@
                   <input type="date" id="filter-end" />
                 </div>
                 <div class="filter-input">
+                  <span>Kategori</span>
+                  <select id="filter-category">
+                    <option value="">Semua</option>
+                    <option value="Rep S">Rep S</option>
+                    <option value="Rep X">Rep X</option>
+                    <option value="Rep M">Rep M</option>
+                    <option value="Rep A">Rep A</option>
+                    <option value="Rep B">Rep B</option>
+                    <option value="Rep C">Rep C</option>
+                    <option value="Rep D">Rep D</option>
+                    <option value="Rep F">Rep F</option>
+                    <option value="Nitro">Nitro</option>
+                    <option value="Kanebo">Kanebo</option>
+                    <option value="Tool S">Tool S</option>
+                    <option value="Tool X">Tool X</option>
+                    <option value="Tool M">Tool M</option>
+                    <option value="Tool A">Tool A</option>
+                    <option value="T Sport">T Sport</option>
+                    <option value="T SUV">T SUV</option>
+                    <option value="T Moto">T Moto</option>
+                    <option value="T Offroad">T Offroad</option>
+                  </select>
+                </div>
+                <div class="filter-input">
                   <span>Status</span>
                   <select id="filter-status">
                     <option value="">Semua</option>
@@ -2207,6 +2231,7 @@
     const filterStart = document.getElementById("filter-start");
     const filterEnd = document.getElementById("filter-end");
     const filterStatus = document.getElementById("filter-status");
+    const filterCategory = document.getElementById("filter-category");
 
     const bulkStatusSelect = document.getElementById("bulk-status-value");
     const bulkStatusBtn = document.getElementById("btn-bulk-status");
@@ -2224,6 +2249,7 @@
       const endVal = filterEnd.value;
       const mechVal = filterMechanicSelect.value;
       const statusVal = filterStatus.value;
+      const catVal = filterCategory ? filterCategory.value : "";
 
       let rows = all;
       if (typeVal) rows = rows.filter(t => t.type === typeVal);
@@ -2231,6 +2257,7 @@
       if (endVal) rows = rows.filter(t => t.date <= endVal);
       if (mechVal) rows = rows.filter(t => t.mechanicId === mechVal);
       if (statusVal) rows = rows.filter(t => (t.status || "") === statusVal);
+      if (catVal) rows = rows.filter(t => (t.category || "") === catVal);
 
       rows.sort((a, b) => b.date.localeCompare(a.date));
 
@@ -2597,7 +2624,7 @@
       });
     }
 
-    [filterType, filterStart, filterEnd, filterMechanicSelect, filterStatus].forEach(el => {
+    [filterType, filterStart, filterEnd, filterMechanicSelect, filterStatus, filterCategory].forEach(el => {
       if (el) el.addEventListener("change", () => renderTransactionsTable());
     });
 
@@ -2620,6 +2647,7 @@
         const endVal = filterEnd.value;
         const mechVal = filterMechanicSelect.value;
         const statusVal = filterStatus.value;
+        const catVal = filterCategory ? filterCategory.value : "";
 
         let changed = 0;
         all.forEach(t => {
@@ -2629,6 +2657,7 @@
           if (endVal && t.date > endVal) ok = false;
           if (mechVal && t.mechanicId !== mechVal) ok = false;
           if (statusVal && (t.status || "") !== statusVal) ok = false;
+          if (catVal && (t.category || "") !== catVal) ok = false;
 
           if (ok) {
             t.status = newStatus;
@@ -2661,11 +2690,16 @@
       const endVal = filterEnd.value;
       const mechVal = filterMechanicSelect.value;
       const statusVal = filterStatus.value;
+      const catVal = filterCategory ? filterCategory.value : "";
 
       let rowsData = all;
 
       if (typeVal) {
         rowsData = rowsData.filter(t => t.type === typeVal);
+      }
+
+      if(catVal) {
+        rowsData = rowsData.filter(t => (t.category || "") === catVal)
       }
 
       // fungsi bantu: ubah "YYYY-MM-DD" jadi timestamp
