@@ -885,6 +885,51 @@
       scrollbar-width: thin;
     }
 
+    /* ===== Laporan stok per tanggal: tampil 4 baris lalu scroll ===== */
+    .stock-report-wrapper {
+      max-height: 190px;      /* kira-kira 4 baris (bisa naik/turun sedikit) */
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    /* Optional: scrollbar minimalis */
+    .stock-report-wrapper::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .stock-report-wrapper::-webkit-scrollbar-thumb {
+      background: #9ca3af;
+      border-radius: 8px;
+    }
+    .stock-report-wrapper {
+      scrollbar-width: thin;
+      scrollbar-color: #9ca3af transparent;
+    }
+
+    /* ===== Laporan periode: tampil 6 baris lalu scroll ===== */
+    .period-report-wrapper {
+      max-height: 198px;        /* ±6 baris tabel */
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    /* scrollbar minimalis */
+    .period-report-wrapper::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .period-report-wrapper::-webkit-scrollbar-thumb {
+      background: #9ca3af;
+      border-radius: 8px;
+    }
+    .period-report-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    .period-report-wrapper {
+      scrollbar-width: thin;
+      scrollbar-color: #9ca3af transparent;
+    }
   </style>
 </head>
 <body>
@@ -949,7 +994,7 @@
               <span>⟳</span>
             </button>
             <!-- STOCK menu (manager only) -->
-            <button class="nav-btn" data-page="stock" data-role="manager-only">
+            <button class="nav-btn" data-page="stock" data-role="all">
               <span class="label">
                 <span class="dot"></span>
                 <span>Stock</span>
@@ -1285,10 +1330,10 @@
                       <th>Tanggal</th>
                       <th>Jenis</th>
                       <th>Kategori</th>
-                      <th>Jumlah</th>
                       <th>Nominal</th>
                       <th>Status</th>
                       <th>Mekanik</th>
+                      <th>Jumlah</th>
                       <th style="width: 80px;">Aksi</th>
                     </tr>
                   </thead>
@@ -1529,6 +1574,30 @@
               </div>
             </div>
           </div>
+        
+          <div class="card mt-3">
+            <div class="section-title-row">
+              <div>
+                <div class="section-title">Laporan Stock per Tanggal</div>
+                <div class="section-sub">Lihat sisa stok tiap kategori pada tanggal tertentu.</div>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="report-stock-date">Tanggal</label>
+                <input type="date" id="report-stock-date" />
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button id="btn-generate-stock-report" class="btn btn-primary" type="button">Lihat Stock</button>
+            </div>
+
+            <div class="mt-2" id="stock-report-summary">
+              <div class="empty-state">Pilih tanggal lalu klik <b>Lihat Stock</b> untuk melihat stok per kategori pada tanggal tersebut.</div>
+            </div>
+          </div>
         </section>
 
         <!-- MECHANICS -->
@@ -1697,7 +1766,7 @@
     function loadTransactions() {
       try {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_TRANSACTIONS), false);
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_TRANSACTIONS) + "&ts=" + Date.now(), false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
           return JSON.parse(xhr.responseText);
@@ -1708,14 +1777,22 @@
       return [];
     }
 
-    function saveTransactions(list) {
+    function saveTransactions(list, opts) {
+      opts = opts || {};
       try {
+        // Default: merge dengan data terbaru di server supaya history tidak ketimpa (lebih aman untuk multi-user)
+        let dataToSave = list;
+        if (!opts.exact) {
+          const remote = loadTransactions();
+          dataToSave = mergeById(remote, list);
+        }
+
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "api/storage.php", false);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify({
           key: STORAGE_KEY_TRANSACTIONS,
-          data: list
+          data: dataToSave
         }));
       } catch (e) {
         console.error(e);
@@ -1725,7 +1802,7 @@
     function loadMechanics() {
       try {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_MECHANICS), false);
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_MECHANICS) + "&ts=" + Date.now(), false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
           return JSON.parse(xhr.responseText);
@@ -1754,7 +1831,7 @@
     function loadStockMovements() {
       try {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_STOCK), false);
+        xhr.open("GET", "api/storage.php?key=" + encodeURIComponent(STORAGE_KEY_STOCK) + "&ts=" + Date.now(), false);
         xhr.send(null);
         if (xhr.status === 200 && xhr.responseText) {
           return JSON.parse(xhr.responseText);
@@ -1767,12 +1844,16 @@
 
     function saveStockMovements(list) {
       try {
+        // Merge dengan data server (karena bisa ada input dari user lain)
+        const remote = loadStockMovements();
+        const dataToSave = mergeById(remote, list);
+
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "api/storage.php", false);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify({
           key: STORAGE_KEY_STOCK,
-          data: list
+          data: dataToSave
         }));
       } catch (e) {
         console.error(e);
@@ -1804,6 +1885,78 @@
     function formatCurrency(num) {
       const n = Number(num) || 0;
       return "IDP$ " + n.toLocaleString("id-ID");
+    }
+
+
+    // ===== MERGE UTIL (biar multi-user tidak saling ketimpa) =====
+    // Gabungkan data server + data lokal berdasarkan id (yang terakhir menang).
+    function mergeById(remoteList, localList) {
+      const map = {};
+      (remoteList || []).forEach(item => {
+        if (item && item.id) map[item.id] = item;
+      });
+      (localList || []).forEach(item => {
+        if (item && item.id) map[item.id] = item;
+      });
+      return Object.values(map);
+    }
+
+    // ===== LIVE SYNC (AUTO UPDATE TANPA REFRESH) =====
+    let liveSyncTimer = null;
+    let liveSyncSnapshot = { transactions: "", mechanics: "", stock: "" };
+
+    function startLiveSync() {
+      stopLiveSync();
+      // polling ringan tiap 3 detik
+      liveSyncTimer = setInterval(pollLiveSync, 3000);
+      pollLiveSync();
+    }
+
+    function stopLiveSync() {
+      if (liveSyncTimer) {
+        clearInterval(liveSyncTimer);
+        liveSyncTimer = null;
+      }
+    }
+
+    function pollLiveSync() {
+      if (!currentUser) return;
+      try {
+        const trx = loadTransactions();
+        const mech = loadMechanics();
+        const stock = loadStockMovements();
+
+        const trxStr = JSON.stringify(trx);
+        const mechStr = JSON.stringify(mech);
+        const stockStr = JSON.stringify(stock);
+
+        const needTrx = trxStr !== liveSyncSnapshot.transactions;
+        const needMech = mechStr !== liveSyncSnapshot.mechanics;
+        const needStock = stockStr !== liveSyncSnapshot.stock;
+
+        if (!needTrx && !needMech && !needStock) return;
+
+        liveSyncSnapshot.transactions = trxStr;
+        liveSyncSnapshot.mechanics = mechStr;
+        liveSyncSnapshot.stock = stockStr;
+
+        if (needMech) {
+          refreshMechanicSelects();
+          renderMechanicsTable();
+        }
+
+        if (needTrx) {
+          renderTransactionsTable();
+          refreshDashboard();
+        }
+
+        if (needStock) {
+          refreshStockPage();
+          refreshStockDashboardCard();
+        }
+      } catch (e) {
+        console.error("Live sync error:", e);
+      }
     }
 
 
@@ -1846,10 +1999,12 @@
       if (!currentUser) return;
       const role = currentUser.role;
 
+      // Mekanik boleh lihat: Transaksi + Stock (read-only)
+      // Manager: semua menu
       navButtons.forEach(btn => {
         const pageKey = btn.getAttribute("data-page");
         if (role === "mechanic") {
-          if (pageKey !== "transactions") {
+          if (pageKey !== "transactions" && pageKey !== "stock") {
             btn.style.display = "none";
           } else {
             btn.style.display = "";
@@ -1926,8 +2081,8 @@
         const role = currentUser.role;
         const pageKey = btn.getAttribute("data-page");
 
-        if (role === "mechanic" && pageKey !== "transactions") {
-          alert("Mekanik hanya bisa mengakses halaman Transaksi.");
+        if (role === "mechanic" && pageKey !== "transactions" && pageKey !== "stock") {
+          alert("Mekanik hanya bisa mengakses halaman Transaksi & Stock.");
           showPage("transactions");
           return;
         }
@@ -1944,6 +2099,7 @@
 
       fetch("api/logout.php", { method: "POST" }).catch(() => {});
 
+      stopLiveSync();
       currentUser = null;
       document.getElementById("app-container").style.display = "none";
       document.getElementById("login-screen").style.display = "flex";
@@ -1992,6 +2148,9 @@
           if (currentUser.role === "manager" && typeof renderUsersTable === "function") {
             renderUsersTable();
           }
+
+          // Live sync: auto update tanpa perlu refresh
+          startLiveSync();
         })
         .catch(err => {
           console.error(err);
@@ -2943,7 +3102,7 @@
       html += `<div>Pengeluaran: <b>${formatCurrency(expense)}</b></div>`;
       html += `<div>Profit bersih: <b>${formatCurrency(profit)}</b></div>`;
       html += `<div class="mt-2 section-sub">Rincian per kategori:</div>`;
-      html += `<div class="table-wrapper mt-2"><table><thead><tr><th>Kategori</th><th>Pemasukan</th><th>Pengeluaran</th></tr></thead><tbody>`;
+      html += `<div class="table-wrapper period-report-wrapper mt-2"><table><thead><tr><th>Kategori</th><th>Pemasukan</th><th>Pengeluaran</th></tr></thead><tbody>`;
       Object.keys(perCategory).forEach(cat => {
         const c = perCategory[cat];
         html += `<tr>
@@ -2954,6 +3113,48 @@
       });
       html += `</tbody></table></div>`;
       reportSummary.innerHTML = html;
+    
+    // ===== STOCK REPORT (stok per tanggal) =====
+    const reportStockDate = document.getElementById("report-stock-date");
+    const stockReportSummary = document.getElementById("stock-report-summary");
+
+    function getStockRekapAsOf(dateStr) {
+      const allMovements = loadStockMovements();
+      const filtered = allMovements.filter(m => (m.date || "") <= dateStr);
+      return stockTotalsByCategory(filtered);
+    }
+
+    function renderStockReport(dateStr) {
+      if (!stockReportSummary) return;
+
+      if (!dateStr) {
+        stockReportSummary.innerHTML = '<div class="empty-state">Tanggal wajib diisi.</div>';
+        return;
+      }
+
+      const rekap = getStockRekapAsOf(dateStr);
+      const cats = Object.keys(rekap).sort();
+
+      let html = "";
+      html += `<div class="section-sub" style="margin-bottom:6px;">Stok per kategori (per ${dateStr})</div>`;
+      html += `<div class="table-wrapper stock-report-wrapper mt-2"><table><thead><tr><th>Kategori</th><th class="text-right">Sisa Stok</th></tr></thead><tbody>`;
+
+      cats.forEach(cat => {
+        html += `<tr><td>${cat}</td><td class="text-right">${Number(rekap[cat] || 0)} item</td></tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      stockReportSummary.innerHTML = html;
+    }
+
+    const btnStockReport = document.getElementById("btn-generate-stock-report");
+    if (btnStockReport) {
+      btnStockReport.addEventListener("click", () => {
+        renderStockReport(reportStockDate ? reportStockDate.value : "");
+      });
+    }
+
+
     });
 
     document.getElementById("btn-mechanic-report").addEventListener("click", () => {
@@ -3163,6 +3364,8 @@
     // ===== INITIAL LOAD =====
     window.addEventListener("DOMContentLoaded", () => {
       populateMonthYearSelects();
+      const rsd = document.getElementById("report-stock-date");
+      if (rsd) rsd.value = todayString();
       // Di awal muat, paksa user login dulu di server.
       loginScreen.style.display = "flex";
       appContainer.style.display = "none";
