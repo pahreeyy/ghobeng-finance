@@ -2501,7 +2501,9 @@
             }
 
             const newList = loadTransactions().filter(t => t.id !== trx.id);
-            saveTransactions(newList);
+
+            // ✅ PENTING: pakai exact agar benar-benar menghapus di server (tanpa merge)
+            saveTransactions(newList, { exact: true });
 
             renderTransactionsTable();
             refreshDashboard();
